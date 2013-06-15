@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -106,12 +107,23 @@ public class Home extends Activity
         }
     }
 
+    /**
+     * Starts the selected activity/application in the grid view.
+     */
+    private class ApplicationLauncher implements AdapterView.OnItemClickListener {
+        public void onItemClick(AdapterView parent, View v, int position, long id) {
+            ApplicationInfo app = (ApplicationInfo) parent.getItemAtPosition(position);
+            startActivity(app.intent);
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mGrid = (GridView) findViewById(R.id.all_apps);
+        mGrid.setOnItemClickListener(new ApplicationLauncher());
         loadApplications();
         showApplications();
     }
@@ -119,7 +131,7 @@ public class Home extends Activity
     private void showApplications()
     {
         mGrid.setAdapter(new ApplicationsAdapter(this, mApplications));
-        mGrid.setSelection(0);
+        mGrid.setSelection(10);
     }
 
     private void loadApplications()
