@@ -56,12 +56,12 @@ public class Home extends Activity
             Drawable icon = info.icon;
 
             if (!info.filtered) {
-                //final Resources resources = getContext().getResources();
-                int width = 42;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-                int height = 42;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-
                 final int iconWidth = icon.getIntrinsicWidth();
                 final int iconHeight = icon.getIntrinsicHeight();
+                
+                //final Resources resources = getContext().getResources();
+                int width = iconWidth;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                int height = iconHeight;//(int) resources.getDimension(android.R.dimen.app_icon_size);
 
                 if (icon instanceof PaintDrawable) {
                     PaintDrawable painter = (PaintDrawable) icon;
@@ -108,12 +108,23 @@ public class Home extends Activity
         }
     }
 
+    /**
+     * Starts the selected activity/application in the grid view.
+     */
+    private class ApplicationLauncher implements AdapterView.OnItemClickListener {
+        public void onItemClick(AdapterView parent, View v, int position, long id) {
+            ApplicationInfo app = (ApplicationInfo) parent.getItemAtPosition(position);
+            startActivity(app.intent);
+        }
+    } 
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mGrid = (AppGridView) findViewById(R.id.all_apps);
+        mGrid.setOnItemClickListener(new ApplicationLauncher()); 
         loadApplications();
         showApplications();
     }
