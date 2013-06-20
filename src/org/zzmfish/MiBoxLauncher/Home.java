@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +31,7 @@ public class Home extends Activity
 {
     private static final String TAG = "MiBoxLauncher";
     private static ArrayList<ApplicationInfo> mApplications;
-    private GridView mGrid;
+    private AppGridView mGrid;
 
 
     /**
@@ -102,18 +101,10 @@ public class Home extends Activity
             final TextView textView = (TextView) convertView.findViewById(R.id.label);
             textView.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
             textView.setText(info.title);
+            if (position == 0)
+                textView.setTextColor(0xff00ffff);
 
             return convertView;
-        }
-    }
-
-    /**
-     * Starts the selected activity/application in the grid view.
-     */
-    private class ApplicationLauncher implements AdapterView.OnItemClickListener {
-        public void onItemClick(AdapterView parent, View v, int position, long id) {
-            ApplicationInfo app = (ApplicationInfo) parent.getItemAtPosition(position);
-            startActivity(app.intent);
         }
     }
 
@@ -122,8 +113,7 @@ public class Home extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mGrid = (GridView) findViewById(R.id.all_apps);
-        mGrid.setOnItemClickListener(new ApplicationLauncher());
+        mGrid = (AppGridView) findViewById(R.id.all_apps);
         loadApplications();
         showApplications();
     }
@@ -131,7 +121,6 @@ public class Home extends Activity
     private void showApplications()
     {
         mGrid.setAdapter(new ApplicationsAdapter(this, mApplications));
-        mGrid.setSelection(10);
     }
 
     private void loadApplications()
