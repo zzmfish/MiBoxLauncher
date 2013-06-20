@@ -101,9 +101,6 @@ public class Home extends Activity
             final TextView textView = (TextView) convertView.findViewById(R.id.label);
             textView.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
             textView.setText(info.title);
-            if (position == 0)
-                textView.setTextColor(0xff00ffff);
-
             return convertView;
         }
     }
