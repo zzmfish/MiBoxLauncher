@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -60,8 +61,8 @@ public class Home extends Activity
                 final int iconHeight = icon.getIntrinsicHeight();
                 
                 //final Resources resources = getContext().getResources();
-                int width = iconWidth;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-                int height = iconHeight;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                int width = 48;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                int height = 48;//(int) resources.getDimension(android.R.dimen.app_icon_size);
 
                 if (icon instanceof PaintDrawable) {
                     PaintDrawable painter = (PaintDrawable) icon;
@@ -119,6 +120,7 @@ public class Home extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mGrid = (AppGridView) findViewById(R.id.all_apps);
         mGrid.setOnItemClickListener(new ApplicationLauncher()); 
