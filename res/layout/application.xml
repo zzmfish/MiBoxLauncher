@@ -16,8 +16,8 @@
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/label"
-    android:layout_width="120dip"
-    android:layout_height="120dip"
+    android:layout_width="100dip"
+    android:layout_height="130dip"
     android:padding="4dip"
     android:textSize="18sp"
     android:singleLine="true"
