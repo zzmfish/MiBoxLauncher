@@ -61,8 +61,8 @@ public class Home extends Activity
                 final int iconHeight = icon.getIntrinsicHeight();
                 
                 //final Resources resources = getContext().getResources();
-                int width = 48;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-                int height = 48;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                int width = 72;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                int height = 72;//(int) resources.getDimension(android.R.dimen.app_icon_size);
 
                 if (icon instanceof PaintDrawable) {
                     PaintDrawable painter = (PaintDrawable) icon;
@@ -70,7 +70,7 @@ public class Home extends Activity
                     painter.setIntrinsicHeight(height);
                 }
 
-                if (width > 0 && height > 0 && (width < iconWidth || height < iconHeight)) {
+                if (width > 0 && height > 0) {
                     final float ratio = (float) iconWidth / iconHeight;
 
                     if (iconWidth > iconHeight) {
