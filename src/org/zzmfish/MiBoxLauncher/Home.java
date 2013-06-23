@@ -165,7 +165,11 @@ public class Home extends Activity
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 application.icon = info.activityInfo.loadIcon(manager);
 
-                mApplications.add(application);
+                Log.d("zhouzm", "package=" + info.activityInfo.packageName);
+                if (info.activityInfo.packageName.equals("com.android.browser"))
+                	mApplications.add(0, application);
+                else
+                	mApplications.add(application);
 
             }
         }
