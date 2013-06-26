@@ -34,9 +34,11 @@ import java.util.List;
 public class Home extends Activity
 {
     private static final String TAG = "MiBoxLauncher";
+    private static final String MIBOX_PACKAGE = "com.duokan.duokantv";
+    //private static final String MIBOX_PACKAGE = "com.android.browser";
+    private boolean mStartMibox = true;
     private static ArrayList<ApplicationInfo> mApplications;
     private AppGridView mGrid;
-
 
     /**
      * GridView adapter to show the list of all installed applications.
@@ -115,6 +117,7 @@ public class Home extends Activity
     private class ApplicationLauncher implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView parent, View v, int position, long id) {
             ApplicationInfo app = (ApplicationInfo) parent.getItemAtPosition(position);
+            Log.d(TAG, "startActivity: " + app.intent.getPackage());
             startActivity(app.intent);
         }
     } 
@@ -157,7 +160,7 @@ public class Home extends Activity
             for (int i = 0; i < count; i++) {
                 ApplicationInfo application = new ApplicationInfo();
                 ResolveInfo info = apps.get(i);
-                Log.d(TAG, "label=" + info.loadLabel(manager));
+                Log.d(TAG, "label=" + info.loadLabel(manager) + ", package=" + info.activityInfo.packageName);
 
                 application.title = info.loadLabel(manager);
                 application.setActivity(new ComponentName(
@@ -167,8 +170,14 @@ public class Home extends Activity
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 application.icon = info.activityInfo.loadIcon(manager);
 
-                if (info.activityInfo.packageName.equals("com.duokan.duokantv"))
+                if (info.activityInfo.packageName.equals(MIBOX_PACKAGE)) {
                 	mApplications.add(0, application);
+                	if (mStartMibox) {
+                		mStartMibox = false;
+                		Log.d(TAG, "startActivity: " + application.intent.getPackage());
+                		startActivity(application.intent);
+                	}
+                }
                 else
                 	mApplications.add(application);
 
