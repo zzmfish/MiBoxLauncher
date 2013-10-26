@@ -1,8 +1,10 @@
 package org.zzmfish.MiBoxLauncher;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,12 +17,14 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -169,6 +173,7 @@ public class Home extends Activity
                         Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 application.icon = info.activityInfo.loadIcon(manager);
+                application.packageName = info.activityInfo.packageName;
 
                 if (info.activityInfo.packageName.equals(MIBOX_PACKAGE)) {
                 	mApplications.add(0, application);
@@ -202,6 +207,29 @@ public class Home extends Activity
 		return true;
 		
 	}
-    
+	
+	private void uninstallApplication() {
+		//获取应用信息
+		ApplicationInfo appInfo = (ApplicationInfo) mGrid.getSelectedItem();
+		if (appInfo == null)
+			return;
+		Uri uri = Uri.fromParts("package", appInfo.packageName, null);
+		Intent it = new Intent(Intent.ACTION_DELETE, uri);
+		startActivity(it);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.setup:
+			break;
+		case R.id.uninstall:
+			uninstallApplication();
+			break;
+		}
+		return true;
+	}
+
+
     
 }
