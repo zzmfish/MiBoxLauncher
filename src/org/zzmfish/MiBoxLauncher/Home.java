@@ -197,7 +197,7 @@ public class Home extends Activity
                 application.icon = info.activityInfo.loadIcon(manager);
                 application.packageName = info.activityInfo.packageName;
 
-                if (info.activityInfo.packageName.equals(MIBOX_PACKAGE)) {
+                /*if (info.activityInfo.packageName.equals(MIBOX_PACKAGE)) {
                 	mApplications.add(0, application);
                 	if (mStartMibox) {
                 		mStartMibox = false;
@@ -205,7 +205,7 @@ public class Home extends Activity
                 		startActivity(application.intent);
                 	}
                 }
-                else
+                else*/
                 	mApplications.add(application);
 
             }
