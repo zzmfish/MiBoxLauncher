@@ -2,10 +2,12 @@ package org.zzmfish.MiBoxLauncher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -43,6 +45,7 @@ public class Home extends Activity
     private boolean mStartMibox = true;
     private static ArrayList<ApplicationInfo> mApplications;
     private AppGridView mGrid;
+    private BroadcastReceiver mApplicationsReceiver = new ApplicationsIntentReceiver();
 
     /**
      * GridView adapter to show the list of all installed applications.
@@ -126,6 +129,24 @@ public class Home extends Activity
         }
     } 
     
+	//应用更新通知
+	private class ApplicationsIntentReceiver extends BroadcastReceiver {
+    	@Override
+        public void onReceive(Context context, Intent intent) {
+            loadApplications();
+            showApplications();
+    	}
+    }
+	
+	private void registerIntentReceivers() {
+		IntentFilter filter;
+		filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+		filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+		filter.addDataScheme("package");
+		registerReceiver(mApplicationsReceiver, filter);
+    }
+	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -136,6 +157,7 @@ public class Home extends Activity
         mGrid.setOnItemClickListener(new ApplicationLauncher()); 
         loadApplications();
         showApplications();
+        registerIntentReceivers();
     }
 
     private void showApplications()
