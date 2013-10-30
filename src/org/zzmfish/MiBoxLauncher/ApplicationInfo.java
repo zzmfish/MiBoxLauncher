@@ -16,35 +16,22 @@
 
 package org.zzmfish.MiBoxLauncher;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 
-/**
- * Represents a launchable application. An application is made of a name (or title), an intent
- * and an icon.
- */
 class ApplicationInfo {
-    /**
-     * The application name.
-     */
     CharSequence title;
-
-    /**
-     * The intent used to start the application.
-     */
     Intent intent;
-
-    /**
-     * The application icon.
-     */
     Drawable icon;
-    
     String packageName;
-
-    /**
-     * When set to true, indicates that the icon has been resized.
-     */
     boolean filtered;
 
     /**
@@ -82,5 +69,39 @@ class ApplicationInfo {
         final String name = intent.getComponent().getClassName();
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+    
+    static ArrayList<ApplicationInfo> getAll(Activity activity)
+    {
+    	ArrayList<ApplicationInfo> appList = null;
+        PackageManager manager = activity.getPackageManager();
+
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> apps = manager.queryIntentActivities(mainIntent, 0);
+        Collections.sort(apps, new ResolveInfo.DisplayNameComparator(manager));
+
+        if (apps != null) {
+        	int count = apps.size();
+            appList = new ArrayList<ApplicationInfo>(count);
+
+            for (int i = 0; i < count; i++) {
+            	ApplicationInfo application = new ApplicationInfo();
+            	ResolveInfo info = apps.get(i);
+            	//Log.d(TAG, "label=" + info.loadLabel(manager) + ", package=" + info.activityInfo.packageName);
+
+            	application.title = info.loadLabel(manager);
+            	application.setActivity(new ComponentName(
+            			info.activityInfo.applicationInfo.packageName,
+            			info.activityInfo.name),
+            			Intent.FLAG_ACTIVITY_NEW_TASK
+            			| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            	application.icon = info.activityInfo.loadIcon(manager);
+            	application.packageName = info.activityInfo.packageName;
+            	appList.add(application);
+            }
+        }
+        return appList;
     }
 }
