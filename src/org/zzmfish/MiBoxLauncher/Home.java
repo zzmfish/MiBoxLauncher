@@ -26,7 +26,7 @@ public class Home extends Activity
 
     //启动应用程序
     private class ApplicationLauncher implements AdapterView.OnItemClickListener {
-        public void onItemClick(AdapterView parent, View v, int position, long id) {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             ApplicationInfo app = (ApplicationInfo) parent.getItemAtPosition(position);
             Log.d(TAG, "startActivity: " + app.intent.getPackage());
             startActivity(app.intent);

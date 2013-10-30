@@ -80,7 +80,7 @@ class ApplicationsAdapter extends ArrayAdapter<ApplicationInfo> {
                 icon.setBounds(0, 0, width, height);
                 icon.draw(canvas);
                 icon.setBounds(oldBounds);
-                icon = info.icon = new BitmapDrawable(thumb);
+                icon = info.icon = new BitmapDrawable(mActivity.getResources(), thumb);
                 info.filtered = true;
             }
         }
