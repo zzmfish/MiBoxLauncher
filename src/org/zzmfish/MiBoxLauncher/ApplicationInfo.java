@@ -16,6 +16,11 @@
 
 package org.zzmfish.MiBoxLauncher;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +31,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 class ApplicationInfo {
     CharSequence title;
@@ -33,6 +39,7 @@ class ApplicationInfo {
     Drawable icon;
     String packageName;
     boolean filtered;
+    static final String LIST_FILE = "AppList.txt";
 
     /**
      * Creates the application intent based on a component name and various launch flags.
@@ -71,8 +78,14 @@ class ApplicationInfo {
         return result;
     }
     
+    /**
+     * 获取应用列表
+     * @param activity
+     * @return
+     */
     static ArrayList<ApplicationInfo> getAll(Activity activity)
     {
+    	loadList(activity);
     	ArrayList<ApplicationInfo> appList = null;
         PackageManager manager = activity.getPackageManager();
 
@@ -89,8 +102,8 @@ class ApplicationInfo {
             for (int i = 0; i < count; i++) {
             	ApplicationInfo application = new ApplicationInfo();
             	ResolveInfo info = apps.get(i);
-            	//Log.d(TAG, "label=" + info.loadLabel(manager) + ", package=" + info.activityInfo.packageName);
 
+            	//保存应用信息
             	application.title = info.loadLabel(manager);
             	application.setActivity(new ComponentName(
             			info.activityInfo.applicationInfo.packageName,
@@ -102,6 +115,49 @@ class ApplicationInfo {
             	appList.add(application);
             }
         }
+        saveList(activity, appList);
         return appList;
     }
+    
+    static void loadList(Activity activity)
+    {
+    	try {
+			FileInputStream file = activity.openFileInput(LIST_FILE);
+			byte buffer[] = new byte[10240];
+			int length = file.read(buffer);
+			String content = new String(buffer, 0, length);
+			Log.d("zhouzm", "content=" + content);
+			String appList[]  = content.split(",");
+			file.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    static void saveList(Activity activity, ArrayList<ApplicationInfo> appList)
+    {
+    	Log.d("zhouzm", "saveList");
+    	try {
+			FileOutputStream file = activity.openFileOutput(LIST_FILE, activity.MODE_PRIVATE);
+			for (int i = 0; i < appList.size(); i ++) {
+				if (i > 0)
+					file.write(",".getBytes());
+				file.write(appList.get(i).packageName.getBytes());
+			}
+			file.close();
+			Log.d("zhouzm", "saveList END");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+    	} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
 }
