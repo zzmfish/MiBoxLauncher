@@ -40,6 +40,7 @@ class ApplicationInfo {
     String packageName;
     boolean filtered;
     static final String LIST_FILE = "AppList.txt";
+    static String mAppSortList[] = null;
 
     /**
      * Creates the application intent based on a component name and various launch flags.
@@ -100,19 +101,28 @@ class ApplicationInfo {
             appList = new ArrayList<ApplicationInfo>(count);
 
             for (int i = 0; i < count; i++) {
-            	ApplicationInfo application = new ApplicationInfo();
+            	ApplicationInfo appInfo = new ApplicationInfo();
             	ResolveInfo info = apps.get(i);
 
             	//保存应用信息
-            	application.title = info.loadLabel(manager);
-            	application.setActivity(new ComponentName(
+            	appInfo.title = info.loadLabel(manager);
+            	appInfo.setActivity(new ComponentName(
             			info.activityInfo.applicationInfo.packageName,
             			info.activityInfo.name),
             			Intent.FLAG_ACTIVITY_NEW_TASK
             			| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            	application.icon = info.activityInfo.loadIcon(manager);
-            	application.packageName = info.activityInfo.packageName;
-            	appList.add(application);
+            	appInfo.icon = info.activityInfo.loadIcon(manager);
+            	appInfo.packageName = info.activityInfo.packageName;
+            	
+            	//插入到对应位置
+            	String appUri = appInfo.intent.toUri(0);
+            	int pos = getAppPosition(appUri);
+            	Log.d("zhouzm", "uri=" + appUri + ", position=" + pos);
+            	while (pos < appList.size() && appList.get(pos) != null)
+            		pos = pos + 1;
+            	while (appList.size() < pos + 1)
+            		appList.add(appInfo);
+            	appList.set(pos, appInfo);
             }
         }
         saveList(activity, appList);
@@ -125,9 +135,12 @@ class ApplicationInfo {
 			FileInputStream file = activity.openFileInput(LIST_FILE);
 			byte buffer[] = new byte[10240];
 			int length = file.read(buffer);
-			String content = new String(buffer, 0, length);
-			Log.d("zhouzm", "content=" + content);
-			String appList[]  = content.split(",");
+			if (length > 0) {
+				Log.d("zhouzm", "buf_len=" + length);
+				String content = new String(buffer, 0, length);
+				Log.d("zhouzm", "content=" + content);
+				mAppSortList  = content.split("\n");
+			}
 			file.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -136,21 +149,18 @@ class ApplicationInfo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
     }
     
     static void saveList(Activity activity, ArrayList<ApplicationInfo> appList)
     {
-    	Log.d("zhouzm", "saveList");
     	try {
 			FileOutputStream file = activity.openFileOutput(LIST_FILE, activity.MODE_PRIVATE);
 			for (int i = 0; i < appList.size(); i ++) {
 				if (i > 0)
-					file.write(",".getBytes());
-				file.write(appList.get(i).packageName.getBytes());
+					file.write("\n".getBytes());
+				file.write(appList.get(i).intent.toUri(0).getBytes());
 			}
 			file.close();
-			Log.d("zhouzm", "saveList END");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -158,6 +168,18 @@ class ApplicationInfo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    }
+    
+    static int getAppPosition(String appUri)
+    {
+    	if (mAppSortList != null) {
+    		for (int i = 0; i < mAppSortList.length; i ++) {
+    			if (mAppSortList[i].equals(appUri))
+    				return i;
+    		}
+    		return mAppSortList.length;
+    	}
+    	return 0;
     }
     
 }
