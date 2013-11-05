@@ -27,14 +27,15 @@ import java.util.ArrayList;
 public class Home extends Activity
 {
     private static final String TAG = "MiBoxLauncher";
-    private static ArrayList<ApplicationInfo> mApplications;
+    private static ArrayList<AppInfo> mApplications;
     private AppGridView mGrid;
     private BroadcastReceiver mApplicationsReceiver = new ApplicationsIntentReceiver();
+    private AppList mAppList = new AppList();
 
     //启动应用程序
     private class ApplicationLauncher implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            ApplicationInfo app = (ApplicationInfo) parent.getItemAtPosition(position);
+            AppInfo app = (AppInfo) parent.getItemAtPosition(position);
             Log.d(TAG, "startActivity: " + app.intent.getPackage());
             startActivity(app.intent);
         }
@@ -73,12 +74,12 @@ public class Home extends Activity
 
     private void showApplications()
     {
-        mGrid.setAdapter(new ApplicationsAdapter(this, mApplications));
+        mGrid.setAdapter(new AppAdapter(this, mApplications));
     }
 
     private void loadApplications()
     {
-        mApplications = ApplicationInfo.getAll(this);
+        mApplications = mAppList.getAll(this);
     }
 
 	@Override
@@ -101,7 +102,7 @@ public class Home extends Activity
 	
 	//卸载应用程序
 	private void uninstallApplication() {
-		ApplicationInfo appInfo = (ApplicationInfo) mGrid.getSelectedItem();
+		AppInfo appInfo = (AppInfo) mGrid.getSelectedItem();
 		if (appInfo == null)
 			return;
 		Uri uri = Uri.fromParts("package", appInfo.packageName, null);
@@ -155,7 +156,7 @@ class MoveToDialog extends DialogFragment {
     		public void onClick(DialogInterface dialog, int id) {
     			Dialog myDialog = MoveToDialog.this.getDialog();
     			int toIndex = ((NumberPicker) myDialog.findViewById(R.id.app_pos)).getValue();
-    			ApplicationInfo.moveApp(MoveToDialog.this.getActivity(), MoveToDialog.this.GetFromIndex(), toIndex);
+    			AppList.getInstance().moveApp(MoveToDialog.this.getActivity(), MoveToDialog.this.GetFromIndex(), toIndex);
     		}
     	});
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

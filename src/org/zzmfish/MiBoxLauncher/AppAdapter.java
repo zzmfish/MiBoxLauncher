@@ -21,11 +21,11 @@ import android.widget.TextView;
 /**
  * GridView adapter to show the list of all installed applications.
  */
-class ApplicationsAdapter extends ArrayAdapter<ApplicationInfo> {
-    private ArrayList<ApplicationInfo> mApplications;
+class AppAdapter extends ArrayAdapter<AppInfo> {
+    private ArrayList<AppInfo> mApplications;
     private Activity mActivity;
 
-    public ApplicationsAdapter(Activity activity, ArrayList<ApplicationInfo> apps) {
+    public AppAdapter(Activity activity, ArrayList<AppInfo> apps) {
         super(activity, 0, apps);
         mApplications = apps;
         mActivity = activity;
@@ -33,7 +33,7 @@ class ApplicationsAdapter extends ArrayAdapter<ApplicationInfo> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ApplicationInfo info = mApplications.get(position);
+        final AppInfo info = mApplications.get(position);
 
         if (convertView == null) {
             final LayoutInflater inflater = mActivity.getLayoutInflater();

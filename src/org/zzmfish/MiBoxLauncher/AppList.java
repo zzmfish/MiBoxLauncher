@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.zzmfish.MiBoxLauncher;
 
 import java.io.FileInputStream;
@@ -29,53 +13,20 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-class ApplicationInfo {
-    CharSequence title;
-    Intent intent;
-    Drawable icon;
-    String packageName;
-    boolean filtered;
-    static final String LIST_FILE = "AppList.txt";
-    static String mAppSortList[] = null;
-
-    /**
-     * Creates the application intent based on a component name and various launch flags.
-     *
-     * @param className the class name of the component representing the intent
-     * @param launchFlags the launch flags
-     */
-    final void setActivity(ComponentName className, int launchFlags) {
-        intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setComponent(className);
-        intent.setFlags(launchFlags);
+public class AppList {
+    static AppList mInstance;
+    final String LIST_FILE = "AppList.txt";
+    String mAppSortList[] = null;
+    
+    AppList() {
+    	super();
+    	mInstance = this;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ApplicationInfo)) {
-            return false;
-        }
-
-        ApplicationInfo that = (ApplicationInfo) o;
-        return title.equals(that.title) &&
-                intent.getComponent().getClassName().equals(
-                        that.intent.getComponent().getClassName());
-    }
-
-    @Override
-    public int hashCode() {
-        int result;
-        result = (title != null ? title.hashCode() : 0);
-        final String name = intent.getComponent().getClassName();
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+    
+    static AppList getInstance() {
+    	return mInstance;
     }
     
     /**
@@ -83,10 +34,10 @@ class ApplicationInfo {
      * @param activity
      * @return
      */
-    static ArrayList<ApplicationInfo> getAll(Activity activity)
+    ArrayList<AppInfo> getAll(Activity activity)
     {
     	loadList(activity);
-    	ArrayList<ApplicationInfo> appList = null;
+    	ArrayList<AppInfo> appList = null;
         PackageManager manager = activity.getPackageManager();
 
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
@@ -97,10 +48,10 @@ class ApplicationInfo {
 
         if (apps != null) {
         	int count = apps.size();
-            appList = new ArrayList<ApplicationInfo>(count);
+            appList = new ArrayList<AppInfo>(count);
 
             for (int i = 0; i < count; i++) {
-            	ApplicationInfo appInfo = new ApplicationInfo();
+            	AppInfo appInfo = new AppInfo();
             	ResolveInfo info = apps.get(i);
 
             	//保存应用信息
@@ -121,7 +72,7 @@ class ApplicationInfo {
             			&& appList.get(pos).intent != null)
             		pos = pos + 1;
             	while (appList.size() < pos + 1)
-            		appList.add(new ApplicationInfo());
+            		appList.add(new AppInfo());
             	appList.set(pos, appInfo);
             	Log.d("zhouzm", "appList.set: " + pos + ")");
             }
@@ -130,7 +81,7 @@ class ApplicationInfo {
         return appList;
     }
     
-    static void loadList(Activity activity)
+    void loadList(Activity activity)
     {
     	try {
 			FileInputStream file = activity.openFileInput(LIST_FILE);
@@ -150,7 +101,7 @@ class ApplicationInfo {
 		}
     }
     
-    static void saveList(Activity activity, ArrayList<ApplicationInfo> appList)
+    void saveList(Activity activity, ArrayList<AppInfo> appList)
     {
     	String uriList[] = new String[appList.size()];
 		for (int i = 0; i < appList.size(); i ++) {
@@ -159,7 +110,8 @@ class ApplicationInfo {
 		saveList(activity, uriList);
 		mAppSortList = uriList;
     }
-    static void saveList(Activity activity, String uriList[])
+    
+    void saveList(Activity activity, String uriList[])
     {
     	try {
 			FileOutputStream file = activity.openFileOutput(LIST_FILE, activity.MODE_PRIVATE);
@@ -178,7 +130,7 @@ class ApplicationInfo {
 		}
     }
     
-    static int getAppPosition(String appUri)
+    int getAppPosition(String appUri)
     {
     	if (mAppSortList != null) {
     		for (int i = 0; i < mAppSortList.length; i ++) {
@@ -190,7 +142,7 @@ class ApplicationInfo {
     	return 0;
     }
     
-    static void moveApp(Activity activity, int fromIndex, int toIndex) {
+    void moveApp(Activity activity, int fromIndex, int toIndex) {
     	int step = (toIndex > fromIndex) ? 1 : -1;
     	String appUri = mAppSortList[fromIndex];
     	for (int i = fromIndex; i != toIndex; i += step) {
