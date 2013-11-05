@@ -30,7 +30,7 @@ public class Home extends Activity
     private static ArrayList<AppInfo> mApplications;
     private AppGridView mGrid;
     private BroadcastReceiver mApplicationsReceiver = new ApplicationsIntentReceiver();
-    private AppList mAppList = new AppList();
+    private AppList mAppList = new AppList(this);
 
     //启动应用程序
     private class ApplicationLauncher implements AdapterView.OnItemClickListener {
@@ -79,7 +79,7 @@ public class Home extends Activity
 
     private void loadApplications()
     {
-        mApplications = mAppList.getAll(this);
+        mApplications = mAppList.getApps();
     }
 
 	@Override
@@ -156,7 +156,7 @@ class MoveToDialog extends DialogFragment {
     		public void onClick(DialogInterface dialog, int id) {
     			Dialog myDialog = MoveToDialog.this.getDialog();
     			int toIndex = ((NumberPicker) myDialog.findViewById(R.id.app_pos)).getValue();
-    			AppList.getInstance().moveApp(MoveToDialog.this.getActivity(), MoveToDialog.this.GetFromIndex(), toIndex);
+    			AppList.getInstance().moveApp(MoveToDialog.this.GetFromIndex(), toIndex);
     		}
     	});
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

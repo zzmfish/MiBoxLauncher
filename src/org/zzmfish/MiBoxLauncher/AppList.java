@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -19,10 +20,12 @@ public class AppList {
     static AppList mInstance;
     final String LIST_FILE = "AppList.txt";
     String mAppSortList[] = null;
+    Activity mActivity;
     
-    AppList() {
+    AppList(Activity activity) {
     	super();
     	mInstance = this;
+    	mActivity = activity;
     }
     
     static AppList getInstance() {
@@ -34,11 +37,11 @@ public class AppList {
      * @param activity
      * @return
      */
-    ArrayList<AppInfo> getAll(Activity activity)
+    ArrayList<AppInfo> getApps()
     {
-    	loadList(activity);
+    	loadList();
     	ArrayList<AppInfo> appList = null;
-        PackageManager manager = activity.getPackageManager();
+        PackageManager manager = mActivity.getPackageManager();
 
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -77,14 +80,14 @@ public class AppList {
             	Log.d("zhouzm", "appList.set: " + pos + ")");
             }
         }
-        saveList(activity, appList);
+        saveList(appList);
         return appList;
     }
     
-    void loadList(Activity activity)
+    void loadList()
     {
     	try {
-			FileInputStream file = activity.openFileInput(LIST_FILE);
+			FileInputStream file = mActivity.openFileInput(LIST_FILE);
 			byte buffer[] = new byte[10240];
 			int length = file.read(buffer);
 			if (length > 0) {
@@ -101,20 +104,20 @@ public class AppList {
 		}
     }
     
-    void saveList(Activity activity, ArrayList<AppInfo> appList)
+    void saveList(ArrayList<AppInfo> appList)
     {
     	String uriList[] = new String[appList.size()];
 		for (int i = 0; i < appList.size(); i ++) {
 			uriList[i] = appList.get(i).intent.toUri(0);
 		}
-		saveList(activity, uriList);
+		saveList(uriList);
 		mAppSortList = uriList;
     }
     
-    void saveList(Activity activity, String uriList[])
+    void saveList(String uriList[])
     {
     	try {
-			FileOutputStream file = activity.openFileOutput(LIST_FILE, activity.MODE_PRIVATE);
+			FileOutputStream file = mActivity.openFileOutput(LIST_FILE, Context.MODE_PRIVATE);
 			for (int i = 0; i < uriList.length; i ++) {
 				if (i > 0)
 					file.write("\n".getBytes());
@@ -142,14 +145,14 @@ public class AppList {
     	return 0;
     }
     
-    void moveApp(Activity activity, int fromIndex, int toIndex) {
+    void moveApp(int fromIndex, int toIndex) {
     	int step = (toIndex > fromIndex) ? 1 : -1;
     	String appUri = mAppSortList[fromIndex];
     	for (int i = fromIndex; i != toIndex; i += step) {
     		mAppSortList[i] = mAppSortList[i + step];
     	}
     	mAppSortList[toIndex] = appUri;
-    	saveList(activity, mAppSortList);
+    	saveList(mAppSortList);
     }
     
 }
