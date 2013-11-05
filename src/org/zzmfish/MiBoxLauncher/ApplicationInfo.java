@@ -118,10 +118,12 @@ class ApplicationInfo {
             	String appUri = appInfo.intent.toUri(0);
             	int pos = getAppPosition(appUri);
             	Log.d("zhouzm", "uri=" + appUri + ", position=" + pos);
-            	while (pos < appList.size() && appList.get(pos) != null)
+            	while (pos < appList.size()
+            			&& appList.get(pos) != null
+            			&& appList.get(pos).intent != null)
             		pos = pos + 1;
             	while (appList.size() < pos + 1)
-            		appList.add(appInfo);
+            		appList.add(new ApplicationInfo());
             	appList.set(pos, appInfo);
             }
         }
