@@ -111,7 +111,7 @@ public class Home extends Activity
 			uninstallApplication();
 			break;
 		case R.id.move:
-		    DialogFragment newFragment = new MoveToDialog(mGrid.getSelectedItemPosition());
+		    DialogFragment newFragment = new MoveAppDialog(mGrid.getSelectedItemPosition());
 		    newFragment.show(getFragmentManager(), "missiles");
 		    loadApplications();
 			break;
@@ -126,10 +126,10 @@ public class Home extends Activity
 /**
  * 移动程序对话框
  */
-class MoveToDialog extends DialogFragment {
+class MoveAppDialog extends DialogFragment {
 	int mFromIndex;
 	
-	public MoveToDialog(int fromIndex) {
+	public MoveAppDialog(int fromIndex) {
 		super();
 		mFromIndex = fromIndex;
 	}
@@ -147,9 +147,9 @@ class MoveToDialog extends DialogFragment {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
     		@Override
     		public void onClick(DialogInterface dialog, int id) {
-    			Dialog myDialog = MoveToDialog.this.getDialog();
+    			Dialog myDialog = MoveAppDialog.this.getDialog();
     			int toIndex = ((NumberPicker) myDialog.findViewById(R.id.app_pos)).getValue();
-    			AppList.getInstance().move(MoveToDialog.this.GetFromIndex(), toIndex);
+    			AppList.getInstance().move(MoveAppDialog.this.GetFromIndex(), toIndex);
     		}
     	});
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
