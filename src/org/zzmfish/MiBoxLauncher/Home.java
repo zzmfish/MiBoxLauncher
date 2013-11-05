@@ -46,7 +46,6 @@ public class Home extends Activity
     	@Override
         public void onReceive(Context context, Intent intent) {
             loadApplications();
-            showApplications();
     	}
     }
 	
@@ -68,18 +67,13 @@ public class Home extends Activity
         mGrid = (AppGridView) findViewById(R.id.all_apps);
         mGrid.setOnItemClickListener(new ApplicationLauncher()); 
         loadApplications();
-        showApplications();
         registerIntentReceivers();
-    }
-
-    private void showApplications()
-    {
-        mGrid.setAdapter(new AppAdapter(this, mApplications));
     }
 
     private void loadApplications()
     {
         mApplications = mAppList.getApps();
+        mGrid.setAdapter(new AppAdapter(this, mApplications));
     }
 
 	@Override
@@ -120,7 +114,6 @@ public class Home extends Activity
 		    DialogFragment newFragment = new MoveToDialog(mGrid.getSelectedItemPosition());
 		    newFragment.show(getFragmentManager(), "missiles");
 		    loadApplications();
-		    showApplications();
 			break;
 		case R.id.exit:
 			finish();
