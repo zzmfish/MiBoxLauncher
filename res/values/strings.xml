@@ -8,4 +8,7 @@
     <string name="confirm_uninstall">你确定要卸载“${APP}”吗？</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="move">移动</string>
+    <string name="move_to">移动到...</string>
+    <string name="exit">退出</string>
 </resources>

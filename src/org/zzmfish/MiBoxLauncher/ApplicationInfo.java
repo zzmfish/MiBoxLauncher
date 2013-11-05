@@ -16,7 +16,6 @@
 
 package org.zzmfish.MiBoxLauncher;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -117,7 +116,6 @@ class ApplicationInfo {
             	//插入到对应位置
             	String appUri = appInfo.intent.toUri(0);
             	int pos = getAppPosition(appUri);
-            	Log.d("zhouzm", "uri=" + appUri + ", position=" + pos);
             	while (pos < appList.size()
             			&& appList.get(pos) != null
             			&& appList.get(pos).intent != null)
@@ -125,6 +123,7 @@ class ApplicationInfo {
             	while (appList.size() < pos + 1)
             		appList.add(new ApplicationInfo());
             	appList.set(pos, appInfo);
+            	Log.d("zhouzm", "appList.set: " + pos + ")");
             }
         }
         saveList(activity, appList);
@@ -138,9 +137,7 @@ class ApplicationInfo {
 			byte buffer[] = new byte[10240];
 			int length = file.read(buffer);
 			if (length > 0) {
-				Log.d("zhouzm", "buf_len=" + length);
 				String content = new String(buffer, 0, length);
-				Log.d("zhouzm", "content=" + content);
 				mAppSortList  = content.split("\n");
 			}
 			file.close();
@@ -155,12 +152,21 @@ class ApplicationInfo {
     
     static void saveList(Activity activity, ArrayList<ApplicationInfo> appList)
     {
+    	String uriList[] = new String[appList.size()];
+		for (int i = 0; i < appList.size(); i ++) {
+			uriList[i] = appList.get(i).intent.toUri(0);
+		}
+		saveList(activity, uriList);
+		mAppSortList = uriList;
+    }
+    static void saveList(Activity activity, String uriList[])
+    {
     	try {
 			FileOutputStream file = activity.openFileOutput(LIST_FILE, activity.MODE_PRIVATE);
-			for (int i = 0; i < appList.size(); i ++) {
+			for (int i = 0; i < uriList.length; i ++) {
 				if (i > 0)
 					file.write("\n".getBytes());
-				file.write(appList.get(i).intent.toUri(0).getBytes());
+				file.write(uriList[i].getBytes());
 			}
 			file.close();
 		} catch (FileNotFoundException e) {
@@ -182,6 +188,16 @@ class ApplicationInfo {
     		return mAppSortList.length;
     	}
     	return 0;
+    }
+    
+    static void moveApp(Activity activity, int fromIndex, int toIndex) {
+    	int step = (toIndex > fromIndex) ? 1 : -1;
+    	String appUri = mAppSortList[fromIndex];
+    	for (int i = fromIndex; i != toIndex; i += step) {
+    		mAppSortList[i] = mAppSortList[i + step];
+    	}
+    	mAppSortList[toIndex] = appUri;
+    	saveList(activity, mAppSortList);
     }
     
 }
