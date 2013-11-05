@@ -156,7 +156,7 @@ class MoveToDialog extends DialogFragment {
     		public void onClick(DialogInterface dialog, int id) {
     			Dialog myDialog = MoveToDialog.this.getDialog();
     			int toIndex = ((NumberPicker) myDialog.findViewById(R.id.app_pos)).getValue();
-    			AppList.getInstance().moveApp(MoveToDialog.this.GetFromIndex(), toIndex);
+    			AppList.getInstance().move(MoveToDialog.this.GetFromIndex(), toIndex);
     		}
     	});
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

@@ -19,7 +19,7 @@ import android.util.Log;
 public class AppList {
     static AppList mInstance;
     final String LIST_FILE = "AppList.txt";
-    String mAppSortList[] = null;
+    String mSortList[] = null;
     Activity mActivity;
     
     AppList(Activity activity) {
@@ -34,12 +34,10 @@ public class AppList {
     
     /**
      * 获取应用列表
-     * @param activity
-     * @return
      */
     ArrayList<AppInfo> getApps()
     {
-    	loadList();
+    	loadSortList();
     	ArrayList<AppInfo> appList = null;
         PackageManager manager = mActivity.getPackageManager();
 
@@ -69,7 +67,7 @@ public class AppList {
             	
             	//插入到对应位置
             	String appUri = appInfo.intent.toUri(0);
-            	int pos = getAppPosition(appUri);
+            	int pos = getSortIndex(appUri);
             	while (pos < appList.size()
             			&& appList.get(pos) != null
             			&& appList.get(pos).intent != null)
@@ -80,11 +78,14 @@ public class AppList {
             	Log.d("zhouzm", "appList.set: " + pos + ")");
             }
         }
-        saveList(appList);
+        saveSortList(appList);
         return appList;
     }
     
-    void loadList()
+    /**
+     * 加载排序列表
+     */
+    void loadSortList()
     {
     	try {
 			FileInputStream file = mActivity.openFileInput(LIST_FILE);
@@ -92,7 +93,7 @@ public class AppList {
 			int length = file.read(buffer);
 			if (length > 0) {
 				String content = new String(buffer, 0, length);
-				mAppSortList  = content.split("\n");
+				mSortList  = content.split("\n");
 			}
 			file.close();
 		} catch (FileNotFoundException e) {
@@ -104,17 +105,23 @@ public class AppList {
 		}
     }
     
-    void saveList(ArrayList<AppInfo> appList)
+    /**
+     * 保存排序列表
+     */
+    void saveSortList(ArrayList<AppInfo> appList)
     {
     	String uriList[] = new String[appList.size()];
 		for (int i = 0; i < appList.size(); i ++) {
 			uriList[i] = appList.get(i).intent.toUri(0);
 		}
-		saveList(uriList);
-		mAppSortList = uriList;
+		saveSortList(uriList);
+		mSortList = uriList;
     }
     
-    void saveList(String uriList[])
+    /**
+     * 保存排序列表2
+     */
+    void saveSortList(String uriList[])
     {
     	try {
 			FileOutputStream file = mActivity.openFileOutput(LIST_FILE, Context.MODE_PRIVATE);
@@ -133,26 +140,32 @@ public class AppList {
 		}
     }
     
-    int getAppPosition(String appUri)
+    /**
+     * 获取位置
+     */
+    int getSortIndex(String appUri)
     {
-    	if (mAppSortList != null) {
-    		for (int i = 0; i < mAppSortList.length; i ++) {
-    			if (mAppSortList[i].equals(appUri))
+    	if (mSortList != null) {
+    		for (int i = 0; i < mSortList.length; i ++) {
+    			if (mSortList[i].equals(appUri))
     				return i;
     		}
-    		return mAppSortList.length;
+    		return mSortList.length;
     	}
     	return 0;
     }
     
-    void moveApp(int fromIndex, int toIndex) {
+    /**
+     * 移动位置
+     */
+    void move(int fromIndex, int toIndex) {
     	int step = (toIndex > fromIndex) ? 1 : -1;
-    	String appUri = mAppSortList[fromIndex];
+    	String appUri = mSortList[fromIndex];
     	for (int i = fromIndex; i != toIndex; i += step) {
-    		mAppSortList[i] = mAppSortList[i + step];
+    		mSortList[i] = mSortList[i + step];
     	}
-    	mAppSortList[toIndex] = appUri;
-    	saveList(mAppSortList);
+    	mSortList[toIndex] = appUri;
+    	saveSortList(mSortList);
     }
     
 }
